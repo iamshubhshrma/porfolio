@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Portfolio from './components/Portfolio';
+import { Toaster } from './components/ui/toaster';
 import './App.css';
 
 function App() {
@@ -10,6 +11,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Portfolio />} />
         </Routes>
+        <Toaster />
       </BrowserRouter>
     </div>
   );
