@@ -71,11 +71,9 @@ const Certifications = () => {
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-4">
                     <div className="flex-shrink-0">
-                      <img
-                        src={cert.logo}
-                        alt={`${cert.issuer} logo`}
-                        className="w-12 h-12 rounded-lg"
-                      />
+                      <div className="w-12 h-12 rounded-lg bg-slate-800 border border-sky-400/30 flex items-center justify-center">
+                        <span className="text-sky-400 font-bold text-sm">TF</span>
+                      </div>
                     </div>
                     <div>
                       <CardTitle className="text-xl text-white mb-1">{cert.name}</CardTitle>
