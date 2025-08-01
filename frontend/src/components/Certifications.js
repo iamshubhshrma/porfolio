@@ -72,7 +72,7 @@ const Certifications = () => {
                   <div className="flex items-center gap-4">
                     <div className="flex-shrink-0">
                       <div className="w-12 h-12 rounded-lg bg-slate-800 border border-sky-400/30 flex items-center justify-center">
-                        <span className="text-sky-400 font-bold text-sm">TF</span>
+                        <span className="text-sky-400 font-bold text-xs">{cert.logoText}</span>
                       </div>
                     </div>
                     <div>
