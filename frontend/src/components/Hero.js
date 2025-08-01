@@ -4,7 +4,7 @@ import { Button } from './ui/button';
 
 const Hero = () => {
   useEffect(() => {
-    // Simple staggered animations without GSAP
+    // Ensure hero content is immediately visible
     const elements = [
       '.hero-title',
       '.hero-subtitle', 
@@ -15,14 +15,14 @@ const Hero = () => {
     elements.forEach((className, index) => {
       const element = document.querySelector(className);
       if (element) {
-        element.style.opacity = '0';
-        element.style.transform = 'translateY(30px)';
-        element.style.transition = 'opacity 1s ease, transform 1s ease';
+        // Make visible immediately
+        element.style.opacity = '1';
+        element.style.transform = 'translateY(0)';
         
+        // Add subtle entrance animation
         setTimeout(() => {
-          element.style.opacity = '1';
-          element.style.transform = 'translateY(0)';
-        }, 300 + (index * 300));
+          element.classList.add('animate-fade-in');
+        }, index * 200);
       }
     });
   }, []);
@@ -44,20 +44,20 @@ const Hero = () => {
   return (
     <section id="hero" className="min-h-screen flex items-center justify-center relative px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto text-center">
-        <h1 className="hero-title text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-6">
+        <h1 className="hero-title text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-6 opacity-100">
           Shubham Sharma
         </h1>
         
-        <h2 className="hero-subtitle text-xl sm:text-2xl lg:text-3xl text-sky-400 font-semibold mb-8">
+        <h2 className="hero-subtitle text-xl sm:text-2xl lg:text-3xl text-sky-400 font-semibold mb-8 opacity-100">
           AI Engineer | Natural Language Processing & MLOps
         </h2>
         
-        <p className="hero-bio text-lg sm:text-xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
+        <p className="hero-bio text-lg sm:text-xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed opacity-100">
           I build and deploy intelligent language models that bridge the gap between human 
           communication and machine understanding, driving business value through scalable AI.
         </p>
         
-        <div className="hero-buttons flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+        <div className="hero-buttons flex flex-col sm:flex-row gap-4 justify-center items-center mb-12 opacity-100">
           <Button 
             onClick={scrollToProjects}
             className="bg-sky-500 hover:bg-sky-600 text-white px-8 py-3 text-lg font-semibold transition-all duration-300 transform hover:scale-105"
@@ -74,7 +74,7 @@ const Hero = () => {
           </Button>
         </div>
         
-        <div className="hero-buttons flex justify-center space-x-6">
+        <div className="hero-buttons flex justify-center space-x-6 opacity-100">
           <a
             href="https://github.com/shubham-ai-dev"
             target="_blank"
