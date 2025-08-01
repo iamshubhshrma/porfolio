@@ -1,38 +1,40 @@
 import React, { useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Github, ExternalLink } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 
-gsap.registerPlugin(ScrollTrigger);
-
 const Projects = () => {
   const sectionRef = useRef(null);
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.fromTo('.project-card', 
-        { opacity: 0, y: 60, scale: 0.9 },
-        { 
-          opacity: 1, 
-          y: 0, 
-          scale: 1,
-          duration: 1.2,
-          stagger: 0.3,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top 70%',
-            end: 'bottom 30%',
-            toggleActions: 'play none none reverse'
-          }
+    // Simple scroll-triggered animation
+    const cards = document.querySelectorAll('.project-card');
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, index) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0) scale(1)';
+          }, index * 300);
         }
-      );
-    }, sectionRef);
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    });
 
-    return () => ctx.revert();
+    cards.forEach((card) => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(60px) scale(0.9)';
+      card.style.transition = 'opacity 1.2s ease, transform 1.2s ease';
+      observer.observe(card);
+    });
+
+    return () => {
+      cards.forEach((card) => observer.unobserve(card));
+    };
   }, []);
 
   const projects = [
