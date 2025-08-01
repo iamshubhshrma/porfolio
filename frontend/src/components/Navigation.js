@@ -1,21 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { gsap } from 'gsap';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
+
+gsap.registerPlugin(ScrollToPlugin);
 
 const Navigation = () => {
   const [activeSection, setActiveSection] = useState('hero');
 
   useEffect(() => {
-    // Navigation fade in animation
-    const nav = document.querySelector('.nav-container');
-    if (nav) {
-      nav.style.opacity = '0';
-      nav.style.transform = 'translateY(-20px)';
-      nav.style.transition = 'opacity 1s ease, transform 1s ease';
-      setTimeout(() => {
-        nav.style.opacity = '1';
-        nav.style.transform = 'translateY(0)';
-      }, 200);
-    }
-
     // Scroll spy functionality
     const sections = document.querySelectorAll('section[id]');
 
@@ -40,9 +32,13 @@ const Navigation = () => {
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start' 
+      gsap.to(window, {
+        duration: 1.5,
+        scrollTo: { 
+          y: element,
+          offsetY: sectionId === 'hero' ? 0 : 80
+        },
+        ease: 'power3.inOut'
       });
     }
   };
@@ -60,7 +56,7 @@ const Navigation = () => {
         <div className="flex justify-between items-center h-16">
           <button
             onClick={() => scrollToSection('hero')}
-            className="text-xl font-bold text-white hover:text-sky-400 transition-colors duration-300"
+            className="text-xl font-bold text-white hover:text-sky-400 transition-colors duration-300 transform hover:scale-105"
           >
             Shubham Sharma
           </button>
@@ -70,7 +66,7 @@ const Navigation = () => {
               <button
                 key={item.id}
                 onClick={() => scrollToSection(item.id)}
-                className={`nav-link text-sm font-medium transition-colors duration-300 ${
+                className={`nav-link text-sm font-medium transition-all duration-300 transform hover:scale-110 ${
                   activeSection === item.id
                     ? 'text-sky-400 border-b-2 border-sky-400 pb-1'
                     : 'text-gray-300 hover:text-white'
@@ -83,7 +79,7 @@ const Navigation = () => {
 
           {/* Mobile menu button */}
           <div className="md:hidden">
-            <button className="text-gray-300 hover:text-white">
+            <button className="text-gray-300 hover:text-white transition-colors duration-300">
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>

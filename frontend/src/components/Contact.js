@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Mail, Linkedin, Github, MapPin, Send } from 'lucide-react';
+import { Mail, Linkedin, Github, MapPin, Send, CheckCircle, AlertCircle } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { useToast } from '../hooks/use-toast';
+import axios from 'axios';
 
-gsap.registerPlugin(ScrollTrigger);
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
 
 const Contact = () => {
   const sectionRef = useRef(null);
@@ -18,62 +18,97 @@ const Contact = () => {
     email: '',
     message: ''
   });
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.fromTo('.contact-content', 
-        { opacity: 0, y: 50 },
-        { 
-          opacity: 1, 
-          y: 0,
-          duration: 1.2,
-          stagger: 0.2,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top 70%',
-            end: 'bottom 30%',
-            toggleActions: 'play none none reverse'
-          }
-        }
-      );
-
-      gsap.fromTo('.contact-item', 
-        { opacity: 0, x: -30 },
-        { 
-          opacity: 1, 
-          x: 0,
-          duration: 0.8,
-          stagger: 0.1,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top 60%',
-            end: 'bottom 40%',
-            toggleActions: 'play none none reverse'
-          }
-        }
-      );
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null); // 'success', 'error', null
 
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
+    // Clear status when user starts typing
+    if (submitStatus) {
+      setSubmitStatus(null);
+    }
   };
 
-  const handleSubmit = (e) => {
+  const validateForm = () => {
+    const errors = [];
+    
+    if (!formData.name.trim() || formData.name.length < 2) {
+      errors.push('Name must be at least 2 characters long');
+    }
+    
+    if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      errors.push('Please enter a valid email address');
+    }
+    
+    if (!formData.message.trim() || formData.message.length < 10) {
+      errors.push('Message must be at least 10 characters long');
+    }
+    
+    return errors;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Mock form submission
-    toast({
-      title: "Message Sent!",
-      description: "Thank you for reaching out. I'll get back to you soon.",
-    });
-    setFormData({ name: '', email: '', message: '' });
+    
+    const errors = validateForm();
+    if (errors.length > 0) {
+      toast({
+        title: "Validation Error",
+        description: errors[0],
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+
+    try {
+      const response = await axios.post(`${API}/contact`, {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        message: formData.message.trim()
+      });
+
+      if (response.data.success) {
+        setSubmitStatus('success');
+        toast({
+          title: "Message Sent Successfully!",
+          description: response.data.message,
+          variant: "default"
+        });
+        
+        // Clear form
+        setFormData({ name: '', email: '', message: '' });
+      }
+    } catch (error) {
+      setSubmitStatus('error');
+      
+      if (error.response?.status === 429) {
+        toast({
+          title: "Rate Limit Exceeded",
+          description: "Please wait a moment before sending another message.",
+          variant: "destructive"
+        });
+      } else if (error.response?.data?.detail) {
+        toast({
+          title: "Error",
+          description: error.response.data.detail,
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to send message. Please try again later.",
+          variant: "destructive"
+        });
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const contactInfo = [
@@ -123,7 +158,7 @@ const Contact = () => {
             
             <div className="space-y-4">
               {contactInfo.map((item, index) => (
-                <div key={index} className="contact-item flex items-center space-x-4 p-4 bg-slate-900/40 rounded-lg border border-slate-700 hover:border-sky-400/50 transition-all duration-300">
+                <div key={index} className="contact-item flex items-center space-x-4 p-4 bg-slate-900/40 rounded-lg border border-slate-700 hover:border-sky-400/50 transition-all duration-300 transform hover:scale-[1.02]">
                   <div className="flex-shrink-0">
                     {item.icon}
                   </div>
@@ -148,7 +183,7 @@ const Contact = () => {
           </div>
 
           {/* Contact Form */}
-          <Card className="contact-content bg-slate-900/60 border-slate-700">
+          <Card className="contact-content bg-slate-900/60 border-slate-700 hover:border-sky-400/30 transition-all duration-300">
             <CardContent className="p-8">
               <h3 className="text-2xl font-bold text-white mb-6">Send a Message</h3>
               
@@ -161,7 +196,8 @@ const Contact = () => {
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    className="bg-slate-800 border-slate-600 text-white placeholder-gray-400 focus:border-sky-400"
+                    className="bg-slate-800 border-slate-600 text-white placeholder-gray-400 focus:border-sky-400 transition-all duration-300"
+                    disabled={isSubmitting}
                   />
                 </div>
                 
@@ -173,7 +209,8 @@ const Contact = () => {
                     value={formData.email}
                     onChange={handleInputChange}
                     required
-                    className="bg-slate-800 border-slate-600 text-white placeholder-gray-400 focus:border-sky-400"
+                    className="bg-slate-800 border-slate-600 text-white placeholder-gray-400 focus:border-sky-400 transition-all duration-300"
+                    disabled={isSubmitting}
                   />
                 </div>
                 
@@ -185,16 +222,43 @@ const Contact = () => {
                     onChange={handleInputChange}
                     required
                     rows={5}
-                    className="bg-slate-800 border-slate-600 text-white placeholder-gray-400 focus:border-sky-400 resize-none"
+                    className="bg-slate-800 border-slate-600 text-white placeholder-gray-400 focus:border-sky-400 resize-none transition-all duration-300"
+                    disabled={isSubmitting}
                   />
                 </div>
                 
                 <Button
                   type="submit"
-                  className="w-full bg-sky-500 hover:bg-sky-600 text-white py-3 flex items-center justify-center gap-2 transition-all duration-300 transform hover:scale-105"
+                  disabled={isSubmitting}
+                  className={`w-full py-3 flex items-center justify-center gap-2 transition-all duration-300 transform hover:scale-105 ${
+                    submitStatus === 'success' 
+                      ? 'bg-green-600 hover:bg-green-700' 
+                      : submitStatus === 'error'
+                      ? 'bg-red-600 hover:bg-red-700'
+                      : 'bg-sky-500 hover:bg-sky-600'
+                  } text-white`}
                 >
-                  <Send size={18} />
-                  Send Message
+                  {isSubmitting ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      Sending...
+                    </>
+                  ) : submitStatus === 'success' ? (
+                    <>
+                      <CheckCircle size={18} />
+                      Message Sent!
+                    </>
+                  ) : submitStatus === 'error' ? (
+                    <>
+                      <AlertCircle size={18} />
+                      Try Again
+                    </>
+                  ) : (
+                    <>
+                      <Send size={18} />
+                      Send Message
+                    </>
+                  )}
                 </Button>
               </form>
             </CardContent>
