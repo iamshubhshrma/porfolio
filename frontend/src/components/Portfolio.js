@@ -1,6 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Navigation from './Navigation';
 import Hero from './Hero';
 import Projects from './Projects';
@@ -10,57 +8,35 @@ import Certifications from './Certifications';
 import Contact from './Contact';
 import Footer from './Footer';
 
-gsap.registerPlugin(ScrollTrigger);
-
 const Portfolio = () => {
   const containerRef = useRef(null);
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Smooth scroll behavior
-      gsap.to(window, { duration: 0, scrollTo: 0 });
-      
-      // Fade in animations for sections
-      gsap.fromTo('.section-animate', 
-        { opacity: 0, y: 50 },
-        { 
-          opacity: 1, 
-          y: 0, 
-          duration: 1,
-          stagger: 0.2,
-          scrollTrigger: {
-            trigger: '.section-animate',
-            start: 'top 80%',
-            end: 'bottom 20%',
-            toggleActions: 'play none none reverse'
-          }
+    // Simple fade-in animation for sections without GSAP context issues
+    const sections = document.querySelectorAll('.section-animate');
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
         }
-      );
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    });
 
-      // Hero text animations
-      gsap.fromTo('.hero-title', 
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 1.2, delay: 0.3 }
-      );
+    sections.forEach((section) => {
+      section.style.opacity = '0';
+      section.style.transform = 'translateY(50px)';
+      section.style.transition = 'opacity 1s ease, transform 1s ease';
+      observer.observe(section);
+    });
 
-      gsap.fromTo('.hero-subtitle', 
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 1, delay: 0.6 }
-      );
-
-      gsap.fromTo('.hero-bio', 
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 1, delay: 0.9 }
-      );
-
-      gsap.fromTo('.hero-buttons', 
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 1, delay: 1.2 }
-      );
-
-    }, containerRef);
-
-    return () => ctx.revert();
+    return () => {
+      sections.forEach((section) => observer.unobserve(section));
+    };
   }, []);
 
   return (
