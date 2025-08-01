@@ -12,31 +12,31 @@ const Portfolio = () => {
   const containerRef = useRef(null);
 
   useEffect(() => {
-    // Simple fade-in animation for sections without GSAP context issues
+    // Ensure all content is visible immediately
     const sections = document.querySelectorAll('.section-animate');
-    
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.style.opacity = '1';
-          entry.target.style.transform = 'translateY(0)';
-        }
-      });
-    }, {
-      threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px'
-    });
-
     sections.forEach((section) => {
-      section.style.opacity = '0';
-      section.style.transform = 'translateY(50px)';
-      section.style.transition = 'opacity 1s ease, transform 1s ease';
-      observer.observe(section);
+      section.style.opacity = '1';
+      section.style.transform = 'translateY(0)';
     });
 
-    return () => {
-      sections.forEach((section) => observer.unobserve(section));
-    };
+    // Add a simple fade-in animation after content is visible
+    setTimeout(() => {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate-in');
+          }
+        });
+      }, {
+        threshold: 0.1
+      });
+
+      sections.forEach((section) => observer.observe(section));
+      
+      return () => {
+        sections.forEach((section) => observer.unobserve(section));
+      };
+    }, 100);
   }, []);
 
   return (
