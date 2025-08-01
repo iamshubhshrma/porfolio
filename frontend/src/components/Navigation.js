@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { gsap } from 'gsap';
 
 const Navigation = () => {
   const [activeSection, setActiveSection] = useState('hero');
 
   useEffect(() => {
     // Navigation fade in animation
-    gsap.fromTo('.nav-container', 
-      { opacity: 0, y: -20 },
-      { opacity: 1, y: 0, duration: 1, delay: 0.2 }
-    );
+    const nav = document.querySelector('.nav-container');
+    if (nav) {
+      nav.style.opacity = '0';
+      nav.style.transform = 'translateY(-20px)';
+      nav.style.transition = 'opacity 1s ease, transform 1s ease';
+      setTimeout(() => {
+        nav.style.opacity = '1';
+        nav.style.transform = 'translateY(0)';
+      }, 200);
+    }
 
     // Scroll spy functionality
     const sections = document.querySelectorAll('section[id]');
-    const navLinks = document.querySelectorAll('.nav-link');
 
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -36,10 +40,9 @@ const Navigation = () => {
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      gsap.to(window, {
-        duration: 1.2,
-        scrollTo: { y: element, offsetY: 80 },
-        ease: "power3.inOut"
+      element.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start' 
       });
     }
   };
