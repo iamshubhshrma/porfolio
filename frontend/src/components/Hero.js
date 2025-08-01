@@ -1,8 +1,32 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Github, Linkedin, ArrowDown } from 'lucide-react';
 import { Button } from './ui/button';
 
 const Hero = () => {
+  useEffect(() => {
+    // Simple staggered animations without GSAP
+    const elements = [
+      '.hero-title',
+      '.hero-subtitle', 
+      '.hero-bio',
+      '.hero-buttons'
+    ];
+
+    elements.forEach((className, index) => {
+      const element = document.querySelector(className);
+      if (element) {
+        element.style.opacity = '0';
+        element.style.transform = 'translateY(30px)';
+        element.style.transition = 'opacity 1s ease, transform 1s ease';
+        
+        setTimeout(() => {
+          element.style.opacity = '1';
+          element.style.transform = 'translateY(0)';
+        }, 300 + (index * 300));
+      }
+    });
+  }, []);
+
   const scrollToProjects = () => {
     const element = document.getElementById('projects');
     if (element) {
