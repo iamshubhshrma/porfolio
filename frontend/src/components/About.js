@@ -71,7 +71,7 @@ const About = () => {
             <Card className="bg-slate-900/60 border-slate-700 overflow-hidden transform hover:scale-105 transition-all duration-500">
               <CardContent className="p-0">
                 <img
-                  src="https://via.placeholder.com/400x400/1e293b/38bdf8?text=Shubham+Sharma"
+                  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect width='400' height='400' fill='%231e293b'/%3E%3Ctext x='200' y='180' font-family='Arial' font-size='16' fill='%2338bdf8' text-anchor='middle'%3EShubham%3C/text%3E%3Ctext x='200' y='220' font-family='Arial' font-size='16' fill='%2338bdf8' text-anchor='middle'%3ESharma%3C/text%3E%3C/svg%3E"
                   alt="Shubham Sharma"
                   className="w-full h-96 object-cover"
                 />
