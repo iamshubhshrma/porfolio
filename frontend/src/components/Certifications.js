@@ -42,7 +42,7 @@ const Certifications = () => {
       credentialId: "G-CERT-9821-XYZ",
       verifyUrl: "#",
       description: "Demonstrates proficiency in building and training neural networks using TensorFlow",
-      logo: "https://via.placeholder.com/60x60/1e293b/38bdf8?text=TF"
+      logoText: "TF"
     },
     {
       name: "AWS Certified Machine Learning - Specialty",
@@ -50,7 +50,7 @@ const Certifications = () => {
       credentialId: "AWS-ML-S-5432-ABC",
       verifyUrl: "#",
       description: "Validates expertise in building, training, and deploying ML models on AWS",
-      logo: "https://via.placeholder.com/60x60/1e293b/38bdf8?text=AWS"
+      logoText: "AWS"
     }
   ];
 
